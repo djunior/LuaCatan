@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <body>
+
+    <canvas id="canvas" width="400" height="300" style="border:1px solid #d3d3d3;">
+        Your browser does not support the HTML5 canvas tag.
+    </canvas>
+
+    <script src="js/hexagon.js"></script>
+    <script src="js/board.js"></script>
+
+    <script>
+        var c = document.getElementById("canvas");
+        var ctx = c.getContext("2d");
+        Board(ctx);
+    </script>
+
+    </body>
+</html>
