@@ -1,36 +1,80 @@
-function hexagon(ctx,pos, color, text) {
-    // hexagon
-    var numberOfSides = 6;
-    
-    var size = pos.width/Math.sqrt(3);
-
-    ctx.beginPath();
-    ctx.moveTo (pos.x +  size * Math.cos(Math.PI/2), pos.y +  size *  Math.sin(Math.PI/2));
-
-    for (var i = 1; i <= numberOfSides;i += 1) {
-        ctx.lineTo (pos.x + size * Math.cos(Math.PI/2 + i * 2 * Math.PI / numberOfSides), pos.y + size * Math.sin(Math.PI/2 + i * 2 * Math.PI / numberOfSides));
+class Hexagon {
+    constructor(x,y,w,h) {
+        this.x = x;
+        this.y = y;
+        this.width = w;
+        this.height = h;
     }
 
-    ctx.strokeStyle = "#000000";
-    ctx.lineWidth = 1;
-    ctx.stroke();
+    add(x,y) {
 
-    ctx.fillStyle = color;
-    ctx.fill();
+        return new Hexagon(this.x + x,this.y + y,this.width,this.height);
 
-    console.log("Writing " + text);
-    ctx.font = "16px Arial";
-    ctx.fillStyle = "black";
-    ctx.textAlign = "center";
-    ctx.fillText(text,pos.x,pos.y);
+    }
+
+    getSide() {
+        return this.width/Math.sqrt(3);
+    }
+
+    getWSize() {
+        return getSide()*Math.sin(Math.PI/6);
+    }
+
+    getHSize() {
+        return getSize()*Math.cos(Math.PI/6);
+    }
+
+    draw(ctx, color, text) {
+        // hexagon
+        var numberOfSides = 6;
+        
+        var side = this.getSide();
+
+        ctx.beginPath();
+        ctx.moveTo (this.x +  side * Math.cos(Math.PI/2), this.y +  side *  Math.sin(Math.PI/2));
+
+        for (var i = 1; i <= numberOfSides;i += 1) {
+            ctx.lineTo (this.x + side * Math.cos(Math.PI/2 + i * 2 * Math.PI / numberOfSides), this.y + side * Math.sin(Math.PI/2 + i * 2 * Math.PI / numberOfSides));
+        }
+
+        ctx.strokeStyle = "#000000";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        ctx.fillStyle = color;
+        ctx.fill();
+
+        ctx.font = "16px Arial";
+        ctx.fillStyle = "black";
+        ctx.textAlign = "center";
+        ctx.fillText(text,this.x,this.y);
+    }
 }
 
-function circle(ctx,pos) {
-    ctx.beginPath();
-    ctx.arc(pos.x, pos.y, pos.radius, 0, 2 * Math.PI, false);
+class Circle {
+    constructor(x,y,r) {
+        this.x = x;
+        this.y = y;
+        this.radius = r;
+    }
 
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = '#000000';
+    add(x,y) {
 
-    ctx.stroke();
+        var obj = new Circle(this.x,this.y,this.radius);
+        obj.x += x;
+        obj.y += y;
+
+        return obj;
+
+    }
+
+    draw(ctx) {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
+
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = '#000000';
+
+        ctx.stroke();
+    }
 }

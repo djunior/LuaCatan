@@ -1,7 +1,7 @@
 class Tile {
-    constructor(pos, info) {
+    constructor(hex, info) {
         console.log("info:" + JSON.stringify(info));
-        this.pos = pos;
+        this.hexagon = hex;
         this.info = info;
     }
 
@@ -27,6 +27,6 @@ class Tile {
                 color = "#AFAC63";
                 break;
         }
-        hexagon(ctx, this.pos, color, this.info.tileNumber);
+        this.hexagon.draw(ctx, color, this.info.tileNumber);
     }
 }
