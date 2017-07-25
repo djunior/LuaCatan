@@ -8,22 +8,47 @@
 
     <script src="js/socketClient.js"></script>
     <script src="js/clientAPI.js"></script>
-    <script src="js/hexagon.js"></script>
+    <script src="js/shapes.js"></script>
+    <script src="js/vertex.js"></script>
     <script src="js/tile.js"></script>
     <script src="js/board.js"></script>
 
     <script>
         var c = document.getElementById("canvas");
         var ctx = c.getContext("2d");
+
+        function getMousePos(canvas, evt) {
+            var rect = canvas.getBoundingClientRect();
+            return {
+                x: evt.clientX - rect.left,
+                y: evt.clientY - rect.top
+            };
+        }
+
+        function draw(board, e) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            var pos = getMousePos(canvas, e);
+            board.onMouseMove(pos);
+            board.draw(ctx);
+        }
+
+        function onClick(board, e) {
+            var pos = getMousePos(canvas, e);
+            board.onMouseClick(pos);
+        }
+
         var clientAPI = new ClientAPI(function() {
             clientAPI.newGame(function(){
                 clientAPI.getBoard(function (tileList) {
                     var board = new Board(tileList);
                     board.draw(ctx);
+
+                    window.addEventListener('mousemove', (e) => { draw(board,e); }, false);
+                    window.addEventListener('click', (e) => { onClick(board,e); }, false);
                 });
             });
         });
-        
+
     </script>
 
     </body>

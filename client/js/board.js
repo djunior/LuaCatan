@@ -32,13 +32,44 @@ class Board {
         // this.tiles[17] = new Tile({x: 125, y: 206, width: 50, height: 44},"");
         // this.tiles[18] = new Tile({x: 175, y: 206, width: 50, height: 44},"");
 
+        this.vertexs = [];
+     
+        this.vertexs[0] = new Vertex({x: 100, y: 103.5, radius: 10});
+        this.vertexs[1] = new Vertex({x: 125, y: 90, radius: 10});
+        this.vertexs[2] = new Vertex({x: 150, y: 103.5, radius: 10});
 
+        this.vertexs[3] = new Vertex({x: 150, y: 132, radius: 10});
     }
 
     draw(ctx) {
         var i = 0;
         for (i = 0; i < this.tiles.length; i++) { 
             this.tiles[i].draw(ctx);
+        }
+        for (i = 0; i < this.vertexs.length; i++) {
+            this.vertexs[i].draw(ctx);
+        }
+    }
+
+    onMouseMove(pos) {
+        var i = 0;
+        for (i = 0; i < this.vertexs.length; i++) {
+            var distance = Math.sqrt( Math.pow(this.vertexs[i].pos.x - pos.x,2) + Math.pow(this.vertexs[i].pos.y - pos.y,2));
+            if (distance < this.vertexs[i].pos.radius) {
+                this.vertexs[i].focus = true;
+            } else {
+                this.vertexs[i].focus = false;
+            }
+        }
+    }
+
+    onMouseClick() {
+        var i = 0;
+        for (i = 0; i < this.vertexs.length; i++) {
+            if (this.vertexs[i].focus == true) {
+                console.log("Editing vertex " + i);
+                break;
+            }
         }
     }
 }

@@ -1,4 +1,4 @@
-function hexagon(ctx,pos,color,text) {
+function hexagon(ctx,pos, color, text) {
     // hexagon
     var numberOfSides = 6;
     
@@ -23,4 +23,14 @@ function hexagon(ctx,pos,color,text) {
     ctx.fillStyle = "black";
     ctx.textAlign = "center";
     ctx.fillText(text,pos.x,pos.y);
+}
+
+function circle(ctx,pos) {
+    ctx.beginPath();
+    ctx.arc(pos.x, pos.y, pos.radius, 0, 2 * Math.PI, false);
+
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = '#000000';
+
+    ctx.stroke();
 }
