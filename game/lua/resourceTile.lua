@@ -9,11 +9,11 @@ local function ResourceTile(tileType, tileNumber, boardTile)
     t.hasThief = false
 
     t.getSimpleObject = function()
-        print("tostring(t.tileNumber):",tostring(t.tileNumber))
         return {
             tileType = t.tileType,
             tileNumber = tostring(t.tileNumber),
             hasThief = t.hasThief,
+            boardTile = t.boardTile.getSimpleObject(),
         }
     end
 

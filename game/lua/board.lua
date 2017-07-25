@@ -1,6 +1,6 @@
-local BoardTile = require "lua.boardTile"
+local BoardTileFactory = require "lua.boardTile"
 local LimitedValue = require"lua.limitedValue"
-local Vertex = require"lua.vertex"
+local VertexFactory = require"lua.vertex"
 local ResourceTile = require"lua.resourceTile"
 
 math.randomseed(os.time())
@@ -48,15 +48,6 @@ local function printVertex(tile)
     end
 end
 
-local function createVertex(n)
-    local vertexList = {}
-    for i = 1, n do
-        vertexList[i] = Vertex(3)
-        print("Adding vertex index " .. tostring(i) .. ": " .. vertexList[i].tostring())
-    end
-    return vertexList
-end
-
 local function Board(levels)
 
     local tileTypes = {
@@ -81,6 +72,9 @@ local function Board(levels)
         LimitedValue({12,1},1),
     }
 
+    local VFactory = VertexFactory()
+    local BFactory = BoardTileFactory()
+
     local levels = levels or 3
 
     local numberOfTiles = 1
@@ -90,71 +84,61 @@ local function Board(levels)
 
     local board = { tiles = {} }
 
-    local vertexList = createVertex(24)
+    local function createVertex(n)
+        local vertexList = {}
+        for i = 1, n do
+            vertexList[i] = VFactory.produce(3)
+        end
+        return vertexList
+    end
 
-    local tile1 = BoardTile(6)
-    tile1.addVertex(vertexList[1])
-    tile1.addVertex(vertexList[2])
-    tile1.addVertex(vertexList[3])
-    tile1.addVertex(vertexList[4])
-    tile1.addVertex(vertexList[5])
-    tile1.addVertex(vertexList[6])
+    local vertexList = createVertex(54)
 
-    local tile2 = BoardTile(6)
-    tile2.addVertex(vertexList[1])
-    tile2.addVertex(vertexList[7])
-    tile2.addVertex(vertexList[8])
-    tile2.addVertex(vertexList[9])
-    tile2.addVertex(vertexList[10])
-    tile2.addVertex(vertexList[2])
+    local function createBoadTile(indexList)
+        local tile = BFactory.produce(6)
+        for i = 1,#indexList do
+            tile.addVertex(vertexList[indexList[i]])
+        end
+        return tile
+    end
 
-    local tile3 = BoardTile(6)
-    tile3.addVertex(vertexList[2])
-    tile3.addVertex(vertexList[10])
-    tile3.addVertex(vertexList[11])
-    tile3.addVertex(vertexList[12])
-    tile3.addVertex(vertexList[13])
-    tile3.addVertex(vertexList[3])
+    local vertexMap = {
+        -- Central tile
+        {1,2,3,4,5,6},
 
-    local tile4 = BoardTile(6)
-    tile4.addVertex(vertexList[3])
-    tile4.addVertex(vertexList[13])
-    tile4.addVertex(vertexList[14])
-    tile4.addVertex(vertexList[15])
-    tile4.addVertex(vertexList[16])
-    tile4.addVertex(vertexList[4])
+        -- Inner circle
+        {8,9,10,2,1,7}, -- 2
+        {10,11,12,13,3,2}, -- 3
+        {3,13,14,15,16,4}, -- 4
+        {5,4,16,17,18,19}, -- 5
+        {22,6,5,19,20,21}, -- 6
+        {24,7,1,6,22,23}, -- 7
 
-    local tile5 = BoardTile(6)
-    tile5.addVertex(vertexList[4])
-    tile5.addVertex(vertexList[16])
-    tile5.addVertex(vertexList[17])
-    tile5.addVertex(vertexList[18])
-    tile5.addVertex(vertexList[19])
-    tile5.addVertex(vertexList[5])
+        -- Outer circle
+        {26,27,8,7,24,25}, -- 8
+        {28,29,30,9,8,27}, -- 9
+        {30,31,32,11,10,9}, -- 10
+        {32,33,34,35,12,11}, -- 11
+        {12,35,36,37,14,13}, -- 12
+        {14,37,38,39,40,15}, -- 13
+        {16,15,40,41,42,17}, -- 14 
+        {18,17,42,43,44,45}, -- 15
+        {20,19,18,45,46,47}, -- 16
+        {50,21,20,47,48,49}, -- 17
+        {52,23,22,21,50,51}, -- 18
+        {54,25,24,23,52,53}, -- 19
+    }
 
-    local tile6 = BoardTile(6)
-    tile6.addVertex(vertexList[5])
-    tile6.addVertex(vertexList[19])
-    tile6.addVertex(vertexList[20])
-    tile6.addVertex(vertexList[21])
-    tile6.addVertex(vertexList[22])
-    tile6.addVertex(vertexList[6])
+    for i = 1,#vertexMap do
+        board.tiles[i] = createResourceTile(tileTypes,tileNumbers,createBoadTile(vertexMap[i]))
+    end
 
-    local tile7 = BoardTile(6)
-    tile7.addVertex(vertexList[6])
-    tile7.addVertex(vertexList[22])
-    tile7.addVertex(vertexList[23])
-    tile7.addVertex(vertexList[24])
-    tile7.addVertex(vertexList[7])
-    tile7.addVertex(vertexList[1])
-
-    board.tiles[1] = createResourceTile(tileTypes,tileNumbers,tile1)
-    board.tiles[2] = createResourceTile(tileTypes,tileNumbers,tile2)
-    board.tiles[3] = createResourceTile(tileTypes,tileNumbers,tile3)
-    board.tiles[4] = createResourceTile(tileTypes,tileNumbers,tile4)
-    board.tiles[5] = createResourceTile(tileTypes,tileNumbers,tile5)
-    board.tiles[6] = createResourceTile(tileTypes,tileNumbers,tile6)
-    board.tiles[7] = createResourceTile(tileTypes,tileNumbers,tile7)
+    for i = 1,#vertexList do
+        local v= vertexList[i]
+        if #v.edges == 2 then
+            print("Vertex " .. tostring(v.id) .. " connections: " .. tostring(#v.edges))
+        end
+    end
 
     board.getTiles = function ()
         local t = {}
@@ -163,67 +147,7 @@ local function Board(levels)
         end
         return t
     end
-
-    -- Level 1 tile
-    -- local center = createTile()
-
-    -- for i = 1,6 do
-    --     if center.addVertex(Vertex(3)) then
-    --         if #center.vertex > 1 then
-    --             center.vertex[#center.vertex].connectTo(center.vertex[#center.vertex-1])
-    --         end
-    --     end
-    -- end
-    -- center.vertex[1].connectTo(center.vertex[#center.vertex])
-
-    -- printVertex(center)
-
-    -- Level 2 tiles
-
-    -- for i = 1,6 do
-    --     local tile = createTile()
-
-        -- if #board.tiles == 1 then
-
-            -- local vertex = board.tiles[1].vertex[i]
-
-            -- tile.addVertex(vertex)
-
-            -- local numberOfConnections = 0
-            -- local vertexIndex = 1
-            -- for j = 1,#vertex.edges do
-            --     if #vertex.edges[j].edges < #vertex.edges[vertexIndex].edges then
-            --         vertexIndex = j
-            --     end
-                
-            -- end
-
-            -- tile.addVertex(vertex.edges[vertexIndex])
-
-            -- local newVertex = Vertex(3)
-
-            -- newVertex.connectTo(vertex)
-
-            -- tile.addVertex(newVertex)
-
-            -- table.insert(board.tiles,tile)
-
-            -- printVertex(tile)
-
-        -- else
-
-        -- end
-    -- end
-
-
-
-
-
-    -- createTile()
-    -- for i = 1,numberOfTiles do
-    --     table.insert(board.tiles,createTile())
-    -- end
-
+    
     return board
 end
 

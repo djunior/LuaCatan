@@ -3,7 +3,7 @@ local json = require'json'
 
 local Game = dofile("lua/main.lua")
 
-local currentGame = Game()
+local currentGame = nil
 
 local function parseRequest(obj)
     local response = {id = obj.id}    

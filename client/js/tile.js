@@ -27,6 +27,6 @@ class Tile {
                 color = "#AFAC63";
                 break;
         }
-        this.hexagon.draw(ctx, color, this.info.tileNumber);
+        this.hexagon.draw(ctx, color, this.info.boardTile.id);
     }
 }

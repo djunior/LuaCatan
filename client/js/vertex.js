@@ -1,7 +1,8 @@
 class Vertex {
-    constructor(cir) {
+    constructor(cir,vertexId) {
         this.circle = cir;
         this.focus = false;
+        this.id = vertexId
     }
 
     draw(ctx) {

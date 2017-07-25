@@ -17,11 +17,11 @@ class Hexagon {
     }
 
     getWSize() {
-        return getSide()*Math.sin(Math.PI/6);
+        return this.getSide()*Math.sin(Math.PI/6);
     }
 
     getHSize() {
-        return getSize()*Math.cos(Math.PI/6);
+        return this.getSide()*Math.cos(Math.PI/6);
     }
 
     draw(ctx, color, text) {

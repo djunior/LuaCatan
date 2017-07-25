@@ -1,42 +1,54 @@
-local function BoardTile(maxVertex)
-    print("BoardTile - creating piece with maxVertex: " .. tostring(maxVertex)) 
-    local maxVertex = maxVertex or 6
-    
-    local t = {}
+local function BoardTileFactory()
+    local tileCount = 0
+    local function BoardTile(maxVertex)
+        print("BoardTile - creating piece with maxVertex: " .. tostring(maxVertex)) 
+        local maxVertex = maxVertex or 6
+        
+        tileCount = tileCount + 1
 
-    t.vertex = {}
-    
-    t.tostring = function() return "BoardTile@" .. tostring(t):gsub("table: ","") .. " { numberOfVertex = " .. tostring(#t.vertex) .. "}" end
+        local t = {}
 
-    t.addVertex = function (v)
+        t.id = tileCount
 
-        if #t.vertex == maxVertex then  
-            return false
+        t.vertex = {}
+        
+        t.tostring = function() return "BoardTile@" .. tostring(t):gsub("table: ","") .. " { numberOfVertex = " .. tostring(#t.vertex) .. "}" end
+
+        t.addVertex = function (v)
+
+            if #t.vertex == maxVertex then  
+                return false
+            end
+
+            t.vertex[#t.vertex+1] = v
+
+            if #t.vertex > 1 then
+                t.vertex[#t.vertex].connectTo(t.vertex[#t.vertex-1])
+            end
+
+            if #t.vertex == maxVertex then
+                t.vertex[#t.vertex].connectTo(t.vertex[1])
+            end
+
+            return true
         end
 
-        t.vertex[#t.vertex+1] = v
-
-        if #t.vertex > 1 then
-            t.vertex[#t.vertex].connectTo(t.vertex[#t.vertex-1])
+        t.getSimpleObject = function ()
+            local o = {
+                id = t.id,
+                vertex = {}
+            }
+            for i = 1,#t.vertex do
+                o.vertex[i] = t.vertex[i].getSimpleObject()
+            end
+            return o
         end
 
-        if #t.vertex == maxVertex then
-            t.vertex[#t.vertex].connectTo(t.vertex[1])
-        end
-
-        return true
+        return t
     end
 
-    -- for i = 1, numberOfVertex do
-    --     local v = Vertex(vertexConnection)
-    --     if i > 1 then
-    --         v.connectTo(t.vertex[i-1])
-    --     end
-    --     table.insert(t.vertex,v)
-    -- end
-    -- t.vertex[1].connectTo(t.vertex[#t.vertex])
-
-    return t
+    return {produce = BoardTile}
 end
 
-return BoardTile
+
+return BoardTileFactory
