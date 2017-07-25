@@ -6,6 +6,8 @@
         Your browser does not support the HTML5 canvas tag.
     </canvas>
 
+    <script src="js/socketClient.js"></script>
+    <script src="js/clientAPI.js"></script>
     <script src="js/hexagon.js"></script>
     <script src="js/tile.js"></script>
     <script src="js/board.js"></script>
@@ -13,8 +15,15 @@
     <script>
         var c = document.getElementById("canvas");
         var ctx = c.getContext("2d");
-        var board = new Board();
-        board.draw(ctx);
+        var clientAPI = new ClientAPI(function() {
+            clientAPI.newGame(function(){
+                clientAPI.getBoard(function (tileList) {
+                    var board = new Board(tileList);
+                    board.draw(ctx);
+                });
+            });
+        });
+        
     </script>
 
     </body>
