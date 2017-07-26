@@ -5,7 +5,9 @@ local Game = dofile("lua/main.lua")
 
 local currentGame = nil
 
-local function parseRequest(obj)
+local player_socket = {}
+
+local function parseRequest(socketWrapper,obj)
     local message = {id = obj.id}    
     local handler = {
         newGame = function ()
@@ -13,12 +15,11 @@ local function parseRequest(obj)
             if currentGame then
                 print("There is a game already!")
                 message.response.gameSession = 1
-                message.response.playerId = currentGame.addPlayer()
+                message.response.playerId = currentGame.addPlayer(socketWrapper)
             else
                 print("Creating new game")
                 message.response.gameSession = 1
-                local playerId
-                currentGame,message.response.playerId = Game()
+                currentGame,message.response.playerId = Game(socketWrapper)
 
                 print("Returning player id:",message.response.playerId)
             end
@@ -48,16 +49,26 @@ local server = require'websocket'.server.ev.listen
     -- this callback is called, whenever a new client connects.
     -- ws is a new websocket instance
     luacatan = function(ws)
+        print("New websocket opened")
         ws:on_message(function(ws,message)
             print("Received message " .. message)
             local obj = json.decode(message)
-            local response = parseRequest(obj)
+
+            local socketWrapper = {
+                send = function (msg)
+                    local str = json.encode(msg)
+                    print("Sending message " .. str)
+                    ws:send(str)
+                end
+            }
+
+            local response = parseRequest(socketWrapper,obj)
             ws:send(json.encode(response))
         end)
 
-      -- this is optional
-      ws:on_close(function()
-          ws:close()
+        -- this is optional
+        ws:on_close(function()
+            ws:close()
         end)
     end
   }

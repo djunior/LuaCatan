@@ -54,6 +54,12 @@
 
                     window.addEventListener('mousemove', (e) => { draw(board,e); }, false);
                     window.addEventListener('click', (e) => { onClick(board,e); }, false);
+
+                    clientAPI.registerHandler("addElement",(request) => {
+                        console.log("Received request " + JSON.stringify(request));
+                        board.addElementToVertex(request.vertexId,new Player(request.playerId));
+                        board.draw(ctx);
+                    });
                 });
             });
         }, function () {});

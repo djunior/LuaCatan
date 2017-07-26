@@ -25,7 +25,7 @@ class SocketClient {
                     o.callbackMap[obj.id] = undefined;
                 } else {
                     if (onMessageReceived != undefined)
-                        onMessageReceived(obj.response);
+                        onMessageReceived(obj);
                 }
         }
     }

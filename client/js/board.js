@@ -79,6 +79,8 @@ class Board {
                 }
             }
         }
+
+        // this.clientAPI.registerHandler("addElement",this.)
     }
 
     draw(ctx) {
