@@ -28,10 +28,9 @@ local function createResourceTile(tileTypes,tileNumbers,boardTile)
     -- print("Tile type:",tileType)
     local tileNumber 
     if tileType == "Desert" then
-        tileNumber = 0            
+        tileNumber = {number = 0, stars = 0}
     else
-        tileNumber = getElementFromList(tileNumbers)[1]
-        print("Tile number:",tileNumber)
+        tileNumber = getElementFromList(tileNumbers)
     end
 
     return ResourceTile(tileType,tileNumber,boardTile)
@@ -59,17 +58,21 @@ local function Board(levels)
         LimitedValue("Desert",1),
     }
 
+    local function TileNumber(n,s)
+        return {number = n, stars = s}
+    end
+
     local tileNumbers = {
-        LimitedValue({2,1},1),
-        LimitedValue({3,2},2),
-        LimitedValue({4,3},2),
-        LimitedValue({5,4},2),
-        LimitedValue({6,5},2),
-        LimitedValue({8,5},2),
-        LimitedValue({9,4},2),
-        LimitedValue({10,3},2),
-        LimitedValue({11,2},2),
-        LimitedValue({12,1},1),
+        LimitedValue(TileNumber(2,1),1),
+        LimitedValue(TileNumber(3,2),2),
+        LimitedValue(TileNumber(4,3),2),
+        LimitedValue(TileNumber(5,4),2),
+        LimitedValue(TileNumber(6,5),2),
+        LimitedValue(TileNumber(8,5),2),
+        LimitedValue(TileNumber(9,4),2),
+        LimitedValue(TileNumber(10,3),2),
+        LimitedValue(TileNumber(11,2),2),
+        LimitedValue(TileNumber(12,1),1),
     }
 
     local VFactory = VertexFactory()
@@ -98,6 +101,9 @@ local function Board(levels)
         local tile = BFactory.produce(6)
         for i = 1,#indexList do
             tile.addVertex(vertexList[indexList[i]])
+
+            -- vertexToTile[vertexList[indexList[i]]] = vertexToTile[vertexList[indexList[i]]] or {}
+            -- table.insert(vertexToTile[vertexList[indexList[i]]],tile)
         end
         return tile
     end
@@ -133,19 +139,16 @@ local function Board(levels)
         board.tiles[i] = createResourceTile(tileTypes,tileNumbers,createBoadTile(vertexMap[i]))
     end
 
-    for i = 1,#vertexList do
-        local v= vertexList[i]
-        if #v.edges == 2 then
-            print("Vertex " .. tostring(v.id) .. " connections: " .. tostring(#v.edges))
-        end
-    end
-
     board.getTiles = function ()
         local t = {}
         for i = 1, #board.tiles do
             t[i] = board.tiles[i].getSimpleObject()
         end
         return t
+    end
+
+    board.addElement = function (playerId, vertexId, elementType)
+        vertexList[vertexId].addElement(playerId,elementType)
     end
     
     return board

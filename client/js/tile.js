@@ -5,6 +5,10 @@ class Tile {
         this.info = info;
     }
 
+    isInside(pos) {
+        return this.hexagon.isInside(pos);
+    }
+
     draw (ctx) {
         var color = ""
         switch(this.info.tileType) {
@@ -27,6 +31,10 @@ class Tile {
                 color = "#AFAC63";
                 break;
         }
-        this.hexagon.draw(ctx, color, this.info.boardTile.id);
+        var text = this.info.tileNumber;
+        if (this.info.hasThief) {
+            text += " (L)";
+        }
+        this.hexagon.draw(ctx, color, text);
     }
 }

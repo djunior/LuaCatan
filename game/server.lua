@@ -6,25 +6,41 @@ local Game = dofile("lua/main.lua")
 local currentGame = nil
 
 local function parseRequest(obj)
-    local response = {id = obj.id}    
+    local message = {id = obj.id}    
     local handler = {
         newGame = function ()
-            response.response = "ok"
-            currentGame = Game()
+            message.response = {}
+            if currentGame then
+                print("There is a game already!")
+                message.response.gameSession = 1
+                message.response.playerId = currentGame.addPlayer()
+            else
+                print("Creating new game")
+                message.response.gameSession = 1
+                local playerId
+                currentGame,message.response.playerId = Game()
+
+                print("Returning player id:",message.response.playerId)
+            end
         end,
 
         getBoard = function ()
-            response.response = currentGame.getTiles()
-        end
+            message.response = currentGame.getTiles()
+        end,
+
+        addElement = function (params)
+            currentGame.addElement(params.playerId,params.vertexId,params.elementType)
+            message.response = "ok"
+        end,
     }
-    handler[obj.request]()
-    return response
+    handler[obj.request](obj.body)
+    return message
 end
 
 local server = require'websocket'.server.ev.listen
 {
-  -- listen on port 8080
-  port = 1337,
+  port = 35465,
+  
   -- the protocols field holds
   --   key: protocol name
   --   value: callback on new connection

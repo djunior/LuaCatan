@@ -24,6 +24,11 @@ class Hexagon {
         return this.getSide()*Math.cos(Math.PI/6);
     }
 
+    isInside(pos) {
+        var distance = Math.sqrt( Math.pow(this.x - pos.x,2) + Math.pow(this.y - pos.y,2));
+        return distance < this.getSide()*Math.sqrt(3)/2;
+    }
+
     draw(ctx, color, text) {
         // hexagon
         var numberOfSides = 6;
@@ -65,10 +70,15 @@ class Circle {
         obj.y += y;
 
         return obj;
-
     }
 
-    draw(ctx) {
+    isInside(pos) {
+        var distance = Math.sqrt( Math.pow(this.x - pos.x,2) + Math.pow(this.y - pos.y,2));
+        return distance < this.radius;
+    }
+
+    draw(ctx,color) {
+        console.log("Drawing circle");
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
 
@@ -76,5 +86,12 @@ class Circle {
         ctx.strokeStyle = '#000000';
 
         ctx.stroke();
+
+        if (color && color != undefined) {
+            console.log("Filling with color:" + color);
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
     }
 }

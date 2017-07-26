@@ -8,7 +8,9 @@
 
     <script src="js/socketClient.js"></script>
     <script src="js/clientAPI.js"></script>
+    <script src="js/player.js"></script>
     <script src="js/shapes.js"></script>
+    <script src="js/elements.js"></script>
     <script src="js/vertex.js"></script>
     <script src="js/tile.js"></script>
     <script src="js/board.js"></script>
@@ -26,28 +28,35 @@
         }
 
         function draw(board, e) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
             var pos = getMousePos(canvas, e);
-            board.onMouseMove(pos);
-            board.draw(ctx);
+            if (board.onMouseMove(pos)) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                board.draw(ctx);
+            }
         }
 
         function onClick(board, e) {
             var pos = getMousePos(canvas, e);
-            board.onMouseClick(pos);
+            if (board.onMouseClick(pos)) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                board.draw(ctx);
+            }
         }
 
         var clientAPI = new ClientAPI(function() {
-            clientAPI.newGame(function(){
+            clientAPI.newGame(function(gameInfo){
+                console.log("GameInfo:" + JSON.stringify(gameInfo));
+                var player = new Player(gameInfo.playerId);
+
                 clientAPI.getBoard(function (tileList) {
-                    var board = new Board(tileList);
+                    var board = new Board(clientAPI,player,tileList);
                     board.draw(ctx);
 
                     window.addEventListener('mousemove', (e) => { draw(board,e); }, false);
                     window.addEventListener('click', (e) => { onClick(board,e); }, false);
                 });
             });
-        });
+        }, function () {});
 
     </script>
 

@@ -1,10 +1,19 @@
 class Board {
-    constructor(tileList) {
+    constructor(clientAPI,player,tileList) {
+        this.clientAPI = clientAPI;
+
+        this.player = player;
+
         this.tiles = [];
 
         var centralPos = new Hexagon(400, 300, 100, 88);
 
+        this.thiefIndex = 0;
+
         var tileMap = [
+            //Central
+            {x: 0, y: 0},
+
             // Inner circle
             {x: -centralPos.width/2, y: -centralPos.height},
             {x: centralPos.width/2, y: -centralPos.height},
@@ -29,39 +38,12 @@ class Board {
 
         ];
 
-        this.tiles[0] = new Tile(centralPos, tileList[0]);
-
         for (var i = 0; i < tileMap.length; i++) {
-            this.tiles[i+1] = new Tile(centralPos.add(tileMap[i].x,tileMap[i].y),tileList[i+1]);
+            this.tiles[i] = new Tile(centralPos.add(tileMap[i].x,tileMap[i].y),tileList[i]);
+            if (tileList[i].tileType == "Desert") {
+                this.thiefIndex = i;
+            }
         }
-
-        // this.tiles[1] = new Tile(centralPos.add( centralPos.width/2, -centralPos.height), tileList[1]);
-        // this.tiles[2] = new Tile(centralPos.add( centralPos.width, 0), tileList[2]);
-        // this.tiles[3] = new Tile(centralPos.add( centralPos.width/2, centralPos.height), tileList[3]);
-        // this.tiles[4] = new Tile(centralPos.add(-centralPos.width/2, centralPos.height), tileList[4]);
-        // this.tiles[5] = new Tile(centralPos.add(-centralPos.width/2, -centralPos.height), tileList[5]);
-        // this.tiles[6] = new Tile(centralPos.add(-centralPos.width,0), tileList[6]);
-
-        // this.tiles[0] = new Tile({x: 75, y: 30, width: 50, height: 44}, "");
-        // this.tiles[1] = new Tile({x: 125, y: 30, width: 50, height: 44}, "");
-            // this.tiles[2] = new Tile({x: 175, y: 30, width: 50, height: 44}, "");
-
-        // this.tiles[3] = new Tile({x: 50, y: 74, width: 50, height: 44}, "");
-        // this.tiles[6] = new Tile({x: 200, y: 74, width: 50, height: 44},"");
-
-        // this.tiles[7] = new Tile({x: 25, y: 118, width: 50, height: 44}, "");
-        
-        
-        // this.tiles[11] = new Tile({x: 225, y: 118, width: 50, height: 44},"");
-
-        // this.tiles[12] = new Tile({x: 50, y: 162, width: 50, height: 44},"");
-        // 
-        // 
-        // this.tiles[15] = new Tile({x: 200, y: 162, width: 50, height: 44},"");
-
-        // this.tiles[16] = new Tile({x: 75, y: 206, width: 50, height: 44},"");
-        // this.tiles[17] = new Tile({x: 125, y: 206, width: 50, height: 44},"");
-        // this.tiles[18] = new Tile({x: 175, y: 206, width: 50, height: 44},"");
 
         var size = centralPos.width/Math.sqrt(3);
         var WSize = size*Math.sin(Math.PI/6);
@@ -71,37 +53,32 @@ class Board {
 
         for (var i = 0; i < tileList.length; i++) {
             for (var j = 0; j < tileList[i].boardTile.vertex.length; j++) {
-                var vId = tileList[i].boardTile.vertex[j].id;
+                var v = tileList[i].boardTile.vertex[j];
                 var centralCircle = new Circle(this.tiles[i].hexagon.x, this.tiles[i].hexagon.y, 10);
-                if (! this.vertex[vId-1] || this.vertex[vId-1] == undefined) {
+                if (! this.vertex[v.id-1] || this.vertex[v.id-1] == undefined) {
                     switch(j) {
                         case 0:
-                            this.vertex[vId-1] = new Vertex(centralCircle.add(-this.tiles[i].hexagon.width/2,-this.tiles[i].hexagon.getWSize()),vId);
+                            this.vertex[v.id-1] = new Vertex(centralCircle.add(-this.tiles[i].hexagon.width/2,-this.tiles[i].hexagon.getWSize()),v);
                             break;
                         case 1:
-                            this.vertex[vId-1] = new Vertex(centralCircle.add(0,-this.tiles[i].hexagon.getSide()),vId);
+                            this.vertex[v.id-1] = new Vertex(centralCircle.add(0,-this.tiles[i].hexagon.getSide()),v);
                             break;
                         case 2:
-                            this.vertex[vId-1] = new Vertex(centralCircle.add(this.tiles[i].hexagon.width/2,-this.tiles[i].hexagon.getWSize()),vId);
+                            this.vertex[v.id-1] = new Vertex(centralCircle.add(this.tiles[i].hexagon.width/2,-this.tiles[i].hexagon.getWSize()),v);
                             break;
                         case 3:
-                            this.vertex[vId-1] = new Vertex(centralCircle.add(this.tiles[i].hexagon.width/2,this.tiles[i].hexagon.getWSize()),vId);
+                            this.vertex[v.id-1] = new Vertex(centralCircle.add(this.tiles[i].hexagon.width/2,this.tiles[i].hexagon.getWSize()),v);
                             break;
                         case 4:
-                            this.vertex[vId-1] = new Vertex(centralCircle.add(0,this.tiles[i].hexagon.getSide()),vId);
+                            this.vertex[v.id-1] = new Vertex(centralCircle.add(0,this.tiles[i].hexagon.getSide()),v);
                             break;
                         case 5:
-                            this.vertex[vId-1] = new Vertex(centralCircle.add(-this.tiles[i].hexagon.width/2,this.tiles[i].hexagon.getWSize()),vId);
+                            this.vertex[v.id-1] = new Vertex(centralCircle.add(-this.tiles[i].hexagon.width/2,this.tiles[i].hexagon.getWSize()),v);
                             break;
                     }
                 }
             }
         }
-        
-        this.vertex[0] = new Vertex(new Circle(100, 103.5, 10));
-        this.vertex[1] = new Vertex(new Circle(125, 90, 10));
-        this.vertex[2] = new Vertex(new Circle(150, 103.5, 10));
-        this.vertex[3] = new Vertex(new Circle(150, 132, 10));
     }
 
     draw(ctx) {
@@ -117,51 +94,63 @@ class Board {
 
     onMouseMove(pos) {
         var i = 0;
+        var found = false;
         for (i = 0; i < this.vertex.length; i++) {
-            if (this.vertex[i] || this.vertex[i] != undefined)
+            if (this.vertex[i] || this.vertex[i] != undefined) {
                 if (this.vertex[i].isInside(pos)) {
                     this.vertex[i].focus = true;
+                    found = true;
                 } else {
+                    if (this.vertex[i].focus == true)
+                        found = true;
                     this.vertex[i].focus = false;
                 }
+            }
+        }
+        return found;
+    }
+
+    addElementToVertex(vertexId,player) {
+        var add = true;
+        var vertex = this.vertex[vertexId-1];
+        for (var i = 0; i < vertex.connections.length; i++) {
+            var connectedVertex = this.vertex[vertex.connections[i]-1];
+            if (connectedVertex.element && connectedVertex.element != undefined) {
+                add = false;
+                break;
+            }
+        }
+
+        if (add) {
+            if (! vertex.element ) {
+                vertex.addElement(new Village(vertex,player));
+            } else if(vertex.element.getType() == "village") {
+                vertex.addElement(new City(vertex,player));
+            }
         }
     }
 
-    onMouseClick() {
+    onMouseClick(pos) {
         var i = 0;
         for (i = 0; i < this.vertex.length; i++) {
-            if (this.vertex[i] || this.vertex[i] != undefined)
-                if (this.vertex[i].focus == true) {
-                    console.log("Editing vertex " + i + " id = " + this.vertex[i].id);
-                    break;
+            if (this.vertex[i] || this.vertex[i] != undefined) {
+                if (this.vertex[i].isInside(pos)) {
+                    this.addElementToVertex(this.vertex[i].id,this.player);
+                    if (this.vertex[i].element)
+                        clientAPI.addElement(this.player.id,this.vertex[i].id,this.vertex[i].element.getType());
+                    return true;
                 }
+            }
+        }
+        for (i = 0; i < this.tiles.length; i++) {
+            if (this.tiles[i].isInside(pos)) {
+                console.log("Clicked on tile " + i);
+                this.tiles[this.thiefIndex].info.hasThief = false;
+                this.tiles[i].info.hasThief = true;
+                this.thiefIndex = i;
+
+                return true;
+            }
         }
     }
 }
-
-// function Board(ctx) {
-//     hexagon(ctx,{x: 75, y: 30, width: 50, height: 44})
-//     hexagon(ctx,{x: 125, y: 30, width: 50, height: 44})
-//     hexagon(ctx,{x: 175, y: 30, width: 50, height: 44})
-
-//     hexagon(ctx,{x: 50, y: 74, width: 50, height: 44})
-//     hexagon(ctx,{x: 100, y: 74, width: 50, height: 44})
-//     hexagon(ctx,{x: 150, y: 74, width: 50, height: 44})
-//     hexagon(ctx,{x: 200, y: 74, width: 50, height: 44})
-
-//     hexagon(ctx,{x: 25, y: 118, width: 50, height: 44});
-//     hexagon(ctx,{x: 75, y: 118, width: 50, height: 44});
-//     hexagon(ctx,{x: 125, y: 118, width: 50, height: 44});
-//     hexagon(ctx,{x: 175, y: 118, width: 50, height: 44});
-//     hexagon(ctx,{x: 225, y: 118, width: 50, height: 44});
-
-//     hexagon(ctx,{x: 50, y: 162, width: 50, height: 44});
-//     hexagon(ctx,{x: 100, y: 162, width: 50, height: 44});
-//     hexagon(ctx,{x: 150, y: 162, width: 50, height: 44});
-//     hexagon(ctx,{x: 200, y: 162, width: 50, height: 44});
-
-//     hexagon(ctx,{x: 75, y: 206, width: 50, height: 44});
-//     hexagon(ctx,{x: 125, y: 206, width: 50, height: 44});
-//     hexagon(ctx,{x: 175, y: 206, width: 50, height: 44});
-
-// }

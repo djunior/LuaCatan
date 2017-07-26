@@ -1,16 +1,16 @@
 class SocketClient {
     
-    constructor(server,port,onReady) {
+    constructor(server,port,onReady, onMessageReceived) {
         this.server = server;
         this.port = port;
 
         this.callbackMap = {};
         this.callbackUniqueId = 0;
 
-        this.openConnection(onReady);
+        this.openConnection(onReady,onMessageReceived);
     }
 
-    openConnection (onReady) {
+    openConnection (onReady,onMessageReceived) {
         this.socket = new WebSocket("ws://" + this.server + ":" + this.port,"luacatan");
         this.socket.onopen = onReady;
         var o = this;
@@ -23,6 +23,9 @@ class SocketClient {
                 if (o.callbackMap[obj.id] != undefined) {
                     o.callbackMap[obj.id](obj.response);
                     o.callbackMap[obj.id] = undefined;
+                } else {
+                    if (onMessageReceived != undefined)
+                        onMessageReceived(obj.response);
                 }
         }
     }
@@ -31,12 +34,16 @@ class SocketClient {
 
     }
 
-    send (msg, callback) {
-        console.log("Sending " + msg + " " + callback)
+    send (request, callback, body) {
+        console.log("Sending " + request + " " + callback)
         var message = {
             id: (++this.callbackUniqueId).toString(),
-            request: msg,
+            request: request
         }
+        
+        if (body != undefined)
+            message.body = body;
+
         console.log("Message.id = " + message.id + " " + typeof message.id);
         this.callbackMap[message.id] = callback;
 

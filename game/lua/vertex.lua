@@ -1,3 +1,5 @@
+local Element = require"lua.element"
+
 local function VertexFactory()
     local vertex_count = 0
 
@@ -28,12 +30,28 @@ local function VertexFactory()
                 v.notifyConnection(t)
             end
         end
+        
         t.tostring = function() return "Vertex@" .. tostring(id) .. "{ numberOfEdges = " .. tostring(#t.edges) .. " }" end
+        
         t.getSimpleObject = function ()
-            return {
-                id = id
+            local o = {
+                id = id,
+                connections = {},
+                element = t.element,
             }
+            
+            for i = 1,#t.edges do
+                o.connections[i] = t.edges[i].id
+            end
+
+            return o
         end
+        
+        t.addElement = function(playerId,elementType)
+            print("Adding element " .. tostring(elementType) .. " to player " .. tostring(playerId))
+            t.element = Element(playerId,elementType)
+        end
+
         return t
     end
     return {produce = Vertex}
