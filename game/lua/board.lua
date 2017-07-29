@@ -1,13 +1,11 @@
+local RNG = require"lua.rng"
 local BoardTileFactory = require "lua.boardTile"
 local LimitedValue = require"lua.limitedValue"
 local VertexFactory = require"lua.vertex"
 local ResourceTile = require"lua.resourceTile"
 
-math.randomseed(os.time())
-
 local function getRandomElement(elegibleElements)
-    local index = math.random(1,#elegibleElements)
-    -- print("Random index:",index)
+    local index = RNG.getRandomNumber(#elegibleElements)
     return elegibleElements[index]
 end
 
@@ -85,7 +83,7 @@ local function Board(levels)
         numberOfTiles = numberOfTiles + i*6
     end
 
-    local board = { tiles = {} }
+    local board = { tiles = {}, axis = {} }
 
     local function createVertex(n)
         local vertexList = {}
@@ -149,6 +147,24 @@ local function Board(levels)
 
     board.addElement = function (playerId, vertexId, elementType)
         vertexList[vertexId].addElement(playerId,elementType)
+    end
+
+    board.generateResources = function(value)
+        local resourcesGenerated = {}
+        for i = 1,#board.tiles do
+            local tile = board.tiles[i]
+            if tile.tileNumber == value then
+                for j = 1,#tile.boardTile.vertex do
+                    local v = tile.boardTile.vertex[j]
+                    if v.element then
+                        local numberOfResources = v.element.produceResource()
+                        resourcesGenerated[v.element.playerId] = resourcesGenerated[v.element.playerId] or {}
+                        resourcesGenerated[v.element.playerId][tile.tileType] = (resourcesGenerated[v.element.playerId][tile.tileType] or 0) + numberOfResources
+                    end
+                end
+            end
+        end
+        return resourcesGenerated
     end
     
     return board

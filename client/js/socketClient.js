@@ -15,10 +15,7 @@ class SocketClient {
         this.socket.onopen = onReady;
         var o = this;
         this.socket.onmessage = function (msg) {
-            console.log("onMessageReceived");
             var obj = JSON.parse(msg.data);
-            console.log("Received obj: " + obj.id + " " + obj.response);
-            console.log("this.callbackMap: " + o.callbackMap);
             if (obj)
                 if (o.callbackMap[obj.id] != undefined) {
                     o.callbackMap[obj.id](obj.response);
@@ -35,7 +32,6 @@ class SocketClient {
     }
 
     send (request, callback, body) {
-        console.log("Sending " + request + " " + callback)
         var message = {
             id: (++this.callbackUniqueId).toString(),
             request: request
@@ -44,11 +40,7 @@ class SocketClient {
         if (body != undefined)
             message.body = body;
 
-        console.log("Message.id = " + message.id + " " + typeof message.id);
         this.callbackMap[message.id] = callback;
-
-        console.log("callbackMap " + this.callbackMap);
-        console.log("callbackMap[1] " + this.callbackMap[message.id]);
         this.socket.send(JSON.stringify(message));
     }
 }

@@ -1,0 +1,22 @@
+i{
+  name: 'client',
+  homepage: 'https://github.com/djunior/LuaCatan',
+  authors: [
+    'djunior <david.junior@icloud.com>'
+  ],
+  description: '',
+  main: '',
+  license: 'MIT',
+  private: true,
+  ignore: [
+    '**/.*',
+    'node_modules',
+    'bower_components',
+    'test',
+    'tests'
+  ],
+  dependencies: {
+    knockout: '^3.4.2'
+  }
+}
+

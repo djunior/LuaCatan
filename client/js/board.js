@@ -1,5 +1,8 @@
 class Board {
-    constructor(clientAPI,player,tileList) {
+    constructor(clientAPI,player,tileList,resourceTray) {
+
+        this.resourceTray = resourceTray;
+
         this.clientAPI = clientAPI;
 
         this.player = player;
@@ -139,7 +142,7 @@ class Board {
                 if (this.vertex[i].isInside(pos)) {
                     this.addElementToVertex(this.vertex[i].id,this.player);
                     if (this.vertex[i].element)
-                        clientAPI.addElement(this.player.id,this.vertex[i].id,this.vertex[i].element.getType());
+                        this.clientAPI.addElement(this.player.id,this.vertex[i].id,this.vertex[i].element.getType());
                     return true;
                 }
             }

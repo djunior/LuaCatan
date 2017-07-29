@@ -78,7 +78,6 @@ class Circle {
     }
 
     draw(ctx,color) {
-        console.log("Drawing circle");
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
 
@@ -88,7 +87,6 @@ class Circle {
         ctx.stroke();
 
         if (color && color != undefined) {
-            console.log("Filling with color:" + color);
             ctx.strokeStyle = color;
             ctx.fillStyle = color;
             ctx.fill();

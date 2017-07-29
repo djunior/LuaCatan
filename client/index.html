@@ -1,11 +1,48 @@
 <!DOCTYPE html>
 <html>
+    <head>
+        <style type="text/css">
+            * {
+                margin: 0; padding: 0;
+            }
+            #container {
+                height: 100%; 
+                width:100%; 
+                font-size: 12px;
+            }
+            #game {
+                border:1px solid #d3d3d3;
+                width: 100%;
+                height: 100%;
+            }
+        </style>
+    </head>
     <body>
 
-    <canvas id="canvas" width="800" height="600" style="border:1px solid #d3d3d3;">
-        Your browser does not support the HTML5 canvas tag.
-    </canvas>
+    <div id="container">
+        <div>
+            <canvas id="canvas" width=800 height=600>
+                Your browser does not support the HTML5 canvas tag.
+            </canvas>
+        </div>
+        <div>
+            <button id="rollDiceButton" data-bind="click: rollDice">Rolar dados</button>
+            <button id="endTurnButton">Fim de turno</button>
+            <button id="buildRoadButton">Construir estrada</button>
+            <button id="buildVillageButton">Construir aldeia</button>
+            <button id="buildCityButton">Construir cidade</button>
+            <button id="buyDevelopmentButton">Comprar carta de desenvolvimento</button>
 
+            <div>Argila: <span data-bind="text: clayCount"></span></div>
+            <div>Pedra: <span data-bind="text: oreCount"></span></div>
+            <div>Trigo: <span data-bind="text: wheatCount"></span></div>
+            <div>Ovelha: <span data-bind="text: sheepCount"></span></div>
+            <div>Madeira: <span data-bind="text: woodCount"></span></div>
+
+        </div>
+    </div>
+
+    <script src="bower_components/knockout/dist/knockout.js"></script>
     <script src="js/socketClient.js"></script>
     <script src="js/clientAPI.js"></script>
     <script src="js/player.js"></script>
@@ -14,57 +51,7 @@
     <script src="js/vertex.js"></script>
     <script src="js/tile.js"></script>
     <script src="js/board.js"></script>
-
-    <script>
-        var c = document.getElementById("canvas");
-        var ctx = c.getContext("2d");
-
-        function getMousePos(canvas, evt) {
-            var rect = canvas.getBoundingClientRect();
-            return {
-                x: evt.clientX - rect.left,
-                y: evt.clientY - rect.top
-            };
-        }
-
-        function draw(board, e) {
-            var pos = getMousePos(canvas, e);
-            if (board.onMouseMove(pos)) {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                board.draw(ctx);
-            }
-        }
-
-        function onClick(board, e) {
-            var pos = getMousePos(canvas, e);
-            if (board.onMouseClick(pos)) {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                board.draw(ctx);
-            }
-        }
-
-        var clientAPI = new ClientAPI(function() {
-            clientAPI.newGame(function(gameInfo){
-                console.log("GameInfo:" + JSON.stringify(gameInfo));
-                var player = new Player(gameInfo.playerId);
-
-                clientAPI.getBoard(function (tileList) {
-                    var board = new Board(clientAPI,player,tileList);
-                    board.draw(ctx);
-
-                    window.addEventListener('mousemove', (e) => { draw(board,e); }, false);
-                    window.addEventListener('click', (e) => { onClick(board,e); }, false);
-
-                    clientAPI.registerHandler("addElement",(request) => {
-                        console.log("Received request " + JSON.stringify(request));
-                        board.addElementToVertex(request.vertexId,new Player(request.playerId));
-                        board.draw(ctx);
-                    });
-                });
-            });
-        }, function () {});
-
-    </script>
+    <script src="js/game.js"></script>
 
     </body>
 </html>

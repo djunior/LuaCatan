@@ -33,6 +33,10 @@ local function parseRequest(socketWrapper,obj)
             currentGame.addElement(params.playerId,params.vertexId,params.elementType)
             message.response = "ok"
         end,
+
+        rollDice = function(params)
+            message.response = currentGame.rollDice(params.playerId)
+        end,
     }
     handler[obj.request](obj.body)
     return message

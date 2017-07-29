@@ -1,8 +1,11 @@
 class ClientAPI {
-    constructor(onReady) {
-        var o = this
+    constructor() {
         this.callbackHandler = {};
-        this.socket = new SocketClient("10.10.1.96","35465",onReady,(message) => {
+    }
+
+    connect(onReady) {
+        var o = this
+        this.socket = new SocketClient("127.0.0.1","35465",onReady,(message) => {
             if (o.callbackHandler[message.command] && o.callbackHandler[message.command] != undefined) {
                 o.callbackHandler[message.command](message);
             }
@@ -25,8 +28,8 @@ class ClientAPI {
         });
     }
 
-    rollDice(callback) {
-        this.socket.send("rollDice",callback);
+    rollDice(playerId,callback) {
+        this.socket.send("rollDice",callback,{playerId: playerId});
     }
 
     endTurn(playerId) {
