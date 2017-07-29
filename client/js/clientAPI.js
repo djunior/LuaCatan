@@ -28,6 +28,14 @@ class ClientAPI {
         });
     }
 
+    addRoad(playerId,vertexFromId,vertexToId) {
+        this.socket.send("addRoad",null,{
+            playerId: playerId,
+            vertexFromId: vertexFromId,
+            vertexToId: vertexToId
+        });
+    }
+
     rollDice(playerId,callback) {
         this.socket.send("rollDice",callback,{playerId: playerId});
     }

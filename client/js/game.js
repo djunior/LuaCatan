@@ -17,9 +17,9 @@ function draw(board, e) {
     }
 }
 
-function onClick(board, e) {
+function onClick(board, e, state) {
     var pos = getMousePos(canvas, e);
-    if (board.onMouseClick(pos)) {
+    if (board.onMouseClick(pos,state)) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         board.draw(ctx);
     }
@@ -33,8 +33,35 @@ function ResourceTray(clientAPI){
     this.sheepCount = ko.observable(0);
     this.woodCount = ko.observable(0);
 
+    this.state = "";
+    
+    this.dice1Path = ko.observable("images/dice-six-faces-six.png");
+    this.dice2Path = ko.observable("images/dice-six-faces-six.png");
+
+    this.getDicePath = function(diceNumber) {
+        switch(diceNumber) {
+            case 1:
+                return "images/dice-six-faces-one.png";
+            case 2:
+                return "images/dice-six-faces-two.png";
+            case 3:
+                return "images/dice-six-faces-three.png";
+            case 4:
+                return "images/dice-six-faces-four.png";
+            case 5:
+                return "images/dice-six-faces-five.png";
+            case 6:
+            default:
+                return "images/dice-six-faces-six.png";
+        }
+    }
+
+    this.updateDices = function(dice1,dice2) {
+        this.dice1Path(this.getDicePath(dice1));
+        this.dice2Path(this.getDicePath(dice2));
+    }
+
     this.updateResources = function(resourceList) {
-        console.log("Updating resources " + JSON.stringify(resourceList));
         if (resourceList) {
             if (resourceList.Wheat)
                 this.wheatCount(resourceList.Wheat);
@@ -59,10 +86,26 @@ function ResourceTray(clientAPI){
 
     this.rollDice = () => {
         this.clientAPI.rollDice(this.player.id,(response) => {
-            console.log("Response: " + JSON.stringify(response));
+            this.updateDices(response.firstDice,response.secondDice);
             if (response.resources)
                 this.updateResources(response.resources);
         });
+    }
+
+    this.addRoad = () => {
+        this.state = "addRoad";
+    }
+
+    this.addVillage = () => {
+        this.state = "addVillage";
+    }
+
+    this.addCity = () => {
+        this.state = "addCity";
+    }
+
+    this.endTurn = () => {
+        this.clientAPI.endTurn(this.player.id);
     }
 
 }
@@ -81,24 +124,29 @@ clientAPI.connect(() => {
             var board = new Board(clientAPI,player,tileList,resourceTray);
             board.draw(ctx);
 
-            window.addEventListener('mousemove', (e) => { draw(board,e); }, false);
-            window.addEventListener('click', (e) => { onClick(board,e); }, false);
+            c.addEventListener('mousemove', (e) => { draw(board,e); }, false);
+            c.addEventListener('click', 
+                (e) => { 
+                    console.log("Registered click, state = " + resourceTray.state);
+                    onClick(board,e,resourceTray.state); 
+                }, false);
 
             clientAPI.registerHandler("addElement",(request) => {
-                console.log("Received request " + JSON.stringify(request));
                 board.addElementToVertex(request.vertexId,new Player(request.playerId));
+                board.draw(ctx);
+            });
+
+            clientAPI.registerHandler("addRoad",(request) => {
+                console.log("Add Road callback:" + JSON.stringify(request));
+                board.addRoad(request.vertexFromId,request.vertexToId,new Player(request.playerId));
                 board.draw(ctx);
             });
         });
 
         clientAPI.registerHandler("diceRolled",(request) => {
-            console.log("Received request " + JSON.stringify(request));
-            
+            resourceTray.updateDices(response.firstDice,response.secondDice);
             if ((request.firstDice + request.secondDice) == 7) {
-                // player.
             } else {
-                // player.addResources(request.resources);
-
                 if (request.resources)
                     resourceTray.updateResources(request.resources);
 

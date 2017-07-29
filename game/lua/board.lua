@@ -3,6 +3,7 @@ local BoardTileFactory = require "lua.boardTile"
 local LimitedValue = require"lua.limitedValue"
 local VertexFactory = require"lua.vertex"
 local ResourceTile = require"lua.resourceTile"
+local RoadFactory = require"lua.road"
 
 local function getRandomElement(elegibleElements)
     local index = RNG.getRandomNumber(#elegibleElements)
@@ -75,6 +76,7 @@ local function Board(levels)
 
     local VFactory = VertexFactory()
     local BFactory = BoardTileFactory()
+    local RFactory = RoadFactory()
 
     local levels = levels or 3
 
@@ -165,6 +167,32 @@ local function Board(levels)
             end
         end
         return resourcesGenerated
+    end
+
+    local roads = {}
+
+    local function getRoadKey(vertexFromId,vertexToId)
+        return tostring(vertexFromId) .. "_" .. tostring(vertexToId)
+    end
+
+    board.addRoad = function (playerId,vertexFromId,vertexToId)
+
+        print("vertexFromId:",vertexFromId)
+        print("vertexToId:",vertexToId)
+
+        local key = getRoadKey(vertexFromId,vertexToId)
+        local revKey = getRoadKey(vertexToId,vertexFromId)
+
+        if not roads[key] or not roads[revKey] then
+            roads[key] = RFactory.produce(playerId)
+
+            vertexList[vertexFromId].addRoad(roads[key])
+            vertexList[vertexToId].addRoad(roads[key])
+
+            return true
+        end
+
+        return false
     end
     
     return board

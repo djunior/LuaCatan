@@ -83,7 +83,7 @@ class Board {
             }
         }
 
-        // this.clientAPI.registerHandler("addElement",this.)
+        this.roads = [];
     }
 
     draw(ctx) {
@@ -91,6 +91,11 @@ class Board {
         for (i = 0; i < this.tiles.length; i++) { 
             this.tiles[i].draw(ctx);
         }
+
+        for (i = 0; i< this.roads.length; i++) {
+            this.roads[i].draw(ctx);
+        }
+
         for (i = 0; i < this.vertex.length; i++) {
             if (this.vertex[i] || this.vertex[i] != undefined)
                 this.vertex[i].draw(ctx);
@@ -135,26 +140,61 @@ class Board {
         }
     }
 
-    onMouseClick(pos) {
+    addRoad(vertexIdFrom,vertexIdTo,player) {
+        var vertexFrom = this.vertex[vertexIdFrom-1];
+        var vertexTo = this.vertex[vertexIdTo-1];
+
+        for (var i = 0; i < vertexFrom.connections.length; i++) {
+            var connectedVertex = this.vertex[vertexFrom.connections[i]-1];
+
+            if (connectedVertex.id == vertexTo.id) {
+                this.roads[this.roads.length] = new Road(vertexFrom,vertexTo,player,this.roads.length);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    handleAddRoadClick(vertexId) {
+        if (this.selectedRoadVertexId && this.selectedRoadVertexId != undefined) {
+            this.addRoad(this.selectedRoadVertexId, vertexId, this.player);
+            this.clientAPI.addRoad(this.player.id,this.selectedRoadVertexId,vertexId);
+            this.selectedRoadVertexId = undefined;
+        } else {
+            this.selectedRoadVertexId = vertexId;
+        }
+    }
+
+    onMouseClick(pos,state) {
         var i = 0;
-        for (i = 0; i < this.vertex.length; i++) {
-            if (this.vertex[i] || this.vertex[i] != undefined) {
-                if (this.vertex[i].isInside(pos)) {
-                    this.addElementToVertex(this.vertex[i].id,this.player);
-                    if (this.vertex[i].element)
-                        this.clientAPI.addElement(this.player.id,this.vertex[i].id,this.vertex[i].element.getType());
-                    return true;
+
+        if (state == "addRoad" || state == "addVillage" || state == "addCity") {
+            for (i = 0; i < this.vertex.length; i++) {
+                if (this.vertex[i] || this.vertex[i] != undefined) {
+                    if (this.vertex[i].isInside(pos)) {
+
+                        if (state == "addVillage" || state == "addCity") {
+                            this.addElementToVertex(this.vertex[i].id,this.player);
+                            if (this.vertex[i].element)
+                                this.clientAPI.addElement(this.player.id,this.vertex[i].id,this.vertex[i].element.getType());
+                        } else if (state == "addRoad") {
+                            this.handleAddRoadClick(this.vertex[i].id);
+                        }
+                        return true;
+                    }
                 }
             }
         }
-        for (i = 0; i < this.tiles.length; i++) {
-            if (this.tiles[i].isInside(pos)) {
-                console.log("Clicked on tile " + i);
-                this.tiles[this.thiefIndex].info.hasThief = false;
-                this.tiles[i].info.hasThief = true;
-                this.thiefIndex = i;
+        else if(state == "moveThief") {
+            for (i = 0; i < this.tiles.length; i++) {
+                if (this.tiles[i].isInside(pos)) {
+                    console.log("Clicked on tile " + i);
+                    this.tiles[this.thiefIndex].info.hasThief = false;
+                    this.tiles[i].info.hasThief = true;
+                    this.thiefIndex = i;
 
-                return true;
+                    return true;
+                }
             }
         }
     }

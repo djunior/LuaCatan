@@ -1,3 +1,29 @@
+class Rect {
+    constructor(x,y,w,h,rad) {
+        this.x = x;
+        this.y = y;
+        this.width = w;
+        this.height = h;
+        this.rad = rad;
+    }
+
+    draw(ctx,color) {
+
+        ctx.save();
+
+        ctx.beginPath();
+
+        ctx.translate( this.x, this.y );
+
+        ctx.rotate(this.rad);
+
+        ctx.fillStyle = color;
+        ctx.fillRect(-this.width,-this.height/2,this.width,this.height);
+
+        ctx.restore();
+    }
+}
+
 class Hexagon {
     constructor(x,y,w,h) {
         this.x = x;

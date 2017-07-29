@@ -34,6 +34,11 @@ local function parseRequest(socketWrapper,obj)
             message.response = "ok"
         end,
 
+        addRoad = function (params)
+            currentGame.addRoad(params.playerId,params.vertexFromId,params.vertexToId)
+            message.response = "ok"
+        end,
+
         rollDice = function(params)
             message.response = currentGame.rollDice(params.playerId)
         end,

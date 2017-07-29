@@ -1,22 +1,21 @@
-i{
-  name: 'client',
-  homepage: 'https://github.com/djunior/LuaCatan',
-  authors: [
-    'djunior <david.junior@icloud.com>'
+{
+  "name": "LuaCatanClient",
+  "homepage": "https://github.com/djunior/LuaCatan",
+  "authors": [
+    "David Britto Jr <brittodavid@yahoo.com>"
   ],
-  description: '',
-  main: '',
-  license: 'MIT',
-  private: true,
-  ignore: [
-    '**/.*',
-    'node_modules',
-    'bower_components',
-    'test',
-    'tests'
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
   ],
-  dependencies: {
-    knockout: '^3.4.2'
+  "dependencies": {
+    "knockout": "^3.4.2"
   }
 }
-

@@ -92,13 +92,23 @@ local function Game(ws)
                 players[i].socket.send({
                     command = "diceRolled",
                     firstDice = d1,
-                    seondDice = d2,
+                    secondDice = d2,
                     resources = players[i].resources,
                 })
             end
         end
 
         return {firstDice = d1, secondDice = d2, resources = players[playerId].resources}
+    end
+
+    function t.addRoad(playerId, vertexFromId, vertexToId)
+        board.addRoad(playerId, vertexFromId, vertexToId)
+        notifyPlayers(playerId,{
+            command = "addRoad",
+            playerId = playerId,
+            vertexFromId = vertexFromId,
+            vertexToId = vertexToId
+        })
     end
 
     return t,players[1].id

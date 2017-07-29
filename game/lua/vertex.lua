@@ -43,14 +43,20 @@ local function VertexFactory()
             local o = {
                 id = id,
                 connections = {},
+                roads = {}
             }
+
+            for i = 1,#t.edges do
+                -- Se chamar t.edges[i].getSimpleObject aqui causar um loop infinito
+                o.connections[i] = t.edges[i].id
+            end
 
             if t.element then
                 o.element = t.element.getSimpleObject()
             end
             
-            for i = 1,#t.edges do
-                o.connections[i] = t.edges[i].id
+            for i = 1,#t.roads do
+                o.roads[i] = t.roads[i].getSimpleObject()
             end
 
             return o
@@ -62,24 +68,8 @@ local function VertexFactory()
             t.element = Element(playerId,elementType)
         end
 
-        t.addRoad = function (destinationVertex,playerId)
-
-            if t.notifyRoad(destinationVertex,playerId) then
-                destinationVertex.notifyRoad(t,playerId)
-            end
-
-        end
-
-        t.notifyRoad = function(originVertex,playerId)
-            
-            if t.roads[originVertex] then
-                return false
-            end
-
-            table.insert(t.roads,{vertex = originVertex, playerId = playerId})
-            t.roads[originVertex] = #t.roads
-
-            return true
+        t.addRoad = function (road)
+            t.roads[#t.roads+1] = road
         end
 
         return t

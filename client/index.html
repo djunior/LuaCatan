@@ -15,6 +15,10 @@
                 width: 100%;
                 height: 100%;
             }
+            .dice {
+                width: 40px;
+                height: 40px;
+            }
         </style>
     </head>
     <body>
@@ -26,11 +30,17 @@
             </canvas>
         </div>
         <div>
-            <button id="rollDiceButton" data-bind="click: rollDice">Rolar dados</button>
+            <div>
+                <div>
+                    <img class="dice" data-bind="attr:{src: dice1Path}"/>
+                    <img class="dice" data-bind="attr:{src: dice2Path}"/>
+                </div>
+                <button id="rollDiceButton" data-bind="click: rollDice">Rolar dados</button>
+            </div>
             <button id="endTurnButton">Fim de turno</button>
-            <button id="buildRoadButton">Construir estrada</button>
-            <button id="buildVillageButton">Construir aldeia</button>
-            <button id="buildCityButton">Construir cidade</button>
+            <button id="buildRoadButton" data-bind="click: addRoad">Construir estrada</button>
+            <button id="buildVillageButton" data-bind="click: addVillage">Construir aldeia</button>
+            <button id="buildCityButton" data-bind="click: addCity">Construir cidade</button>
             <button id="buyDevelopmentButton">Comprar carta de desenvolvimento</button>
 
             <div>Argila: <span data-bind="text: clayCount"></span></div>
