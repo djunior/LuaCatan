@@ -36,6 +36,16 @@ local function PlayerFactory(maxPlayers)
     return {produce = Player}
 end
 
+local function ConversionTable()
+    local t = {
+        road = {Clay = 1, Wood = 1},
+        village = {Clay = 1, Wood = 1, Sheep = 1, Wheat = 1},
+        city = {Wheat = 2, Ore = 3},
+        developmentCard = {Sheep = 1, Wheat = 1, Ore = 1},
+    }
+    return t
+end
+
 local function Game(ws)
     local t = {}
 
@@ -46,6 +56,8 @@ local function Game(ws)
     local PFactory = PlayerFactory(4)
     local players = {PFactory.produce(ws)}
 
+    local conversionTable = ConversionTable()
+
     local function notifyPlayers(playerId,message)
         for i = 1,#players do
             if players[i].id ~= playerId then
@@ -55,6 +67,7 @@ local function Game(ws)
     end
 
     t.getTiles = function () return board.getTiles() end
+    t.getConversionTable = function () return conversionTable end
     
     function t.addPlayer (socket) 
         table.insert(players,PFactory.produce(socket))

@@ -120,7 +120,8 @@ class Board {
         return found;
     }
 
-    addElementToVertex(vertexId,player) {
+    addElementToVertex(vertexId,player,elementType) {
+        console.log("Board addElementToVertex:(" + vertexId + "," + player.id + "," + elementType + ")");
         var add = true;
         var vertex = this.vertex[vertexId-1];
         for (var i = 0; i < vertex.connections.length; i++) {
@@ -132,9 +133,9 @@ class Board {
         }
 
         if (add) {
-            if (! vertex.element ) {
+            if (elementType == "village" ) {
                 vertex.addElement(new Village(vertex,player));
-            } else if(vertex.element.getType() == "village") {
+            } else if(elementType == "city") {
                 vertex.addElement(new City(vertex,player));
             }
         }
@@ -155,13 +156,32 @@ class Board {
         return false;
     }
 
-    handleAddRoadClick(vertexId) {
+    handleAddRoad(vertexId) {
         if (this.selectedRoadVertexId && this.selectedRoadVertexId != undefined) {
             this.addRoad(this.selectedRoadVertexId, vertexId, this.player);
             this.clientAPI.addRoad(this.player.id,this.selectedRoadVertexId,vertexId);
             this.selectedRoadVertexId = undefined;
         } else {
             this.selectedRoadVertexId = vertexId;
+        }
+    }
+
+    handleAddVillage(vertexId) {
+        var v = this.vertex[vertexId-1];
+        if (! v.element || v.element == undefined) {
+            this.addElementToVertex(vertexId,this.player,"village");
+            this.clientAPI.addElement(this.player.id,vertexId,v.element.getType());
+        }
+    }
+
+    handleAddCity(vertexId) {
+        var  v = this.vertex[vertexId-1];
+        if (v.element && v.element != undefined && 
+            v.element.getType() == "village" && 
+            v.element.player.id == this.player.id) {
+
+            this.addElementToVertex(vertexId,this.player,"city");
+            this.clientAPI.addElement(this.player.id,vertexId,v.element.getType());
         }
     }
 
@@ -173,12 +193,12 @@ class Board {
                 if (this.vertex[i] || this.vertex[i] != undefined) {
                     if (this.vertex[i].isInside(pos)) {
 
-                        if (state == "addVillage" || state == "addCity") {
-                            this.addElementToVertex(this.vertex[i].id,this.player);
-                            if (this.vertex[i].element)
-                                this.clientAPI.addElement(this.player.id,this.vertex[i].id,this.vertex[i].element.getType());
+                        if (state == "addVillage") {
+                            this.handleAddVillage(this.vertex[i].id);
+                        } else if (state == "addCity") {
+                            this.handleAddCity(this.vertex[i].id);
                         } else if (state == "addRoad") {
-                            this.handleAddRoadClick(this.vertex[i].id);
+                            this.handleAddRoad(this.vertex[i].id);
                         }
                         return true;
                     }

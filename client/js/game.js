@@ -108,6 +108,10 @@ function ResourceTray(clientAPI){
         this.clientAPI.endTurn(this.player.id);
     }
 
+    this.buyDevelopmentCard = () => {
+        
+    }
+
 }
 
 var clientAPI = new ClientAPI();
@@ -129,10 +133,12 @@ clientAPI.connect(() => {
                 (e) => { 
                     console.log("Registered click, state = " + resourceTray.state);
                     onClick(board,e,resourceTray.state); 
-                }, false);
+                }
+            ,false);
 
             clientAPI.registerHandler("addElement",(request) => {
-                board.addElementToVertex(request.vertexId,new Player(request.playerId));
+                console.log("Received addElement: " + JSON.stringify(request));
+                board.addElementToVertex(request.vertexId,new Player(request.playerId),request.elementType);
                 board.draw(ctx);
             });
 
@@ -144,6 +150,7 @@ clientAPI.connect(() => {
         });
 
         clientAPI.registerHandler("diceRolled",(request) => {
+            console.log("Dice rolled callback:" + JSON.stringify(request));
             resourceTray.updateDices(response.firstDice,response.secondDice);
             if ((request.firstDice + request.secondDice) == 7) {
             } else {

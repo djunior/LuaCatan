@@ -16,10 +16,12 @@ local function parseRequest(socketWrapper,obj)
                 print("There is a game already!")
                 message.response.gameSession = 1
                 message.response.playerId = currentGame.addPlayer(socketWrapper)
+                message.conversionTable = currentGame.getConversionTable()
             else
                 print("Creating new game")
                 message.response.gameSession = 1
                 currentGame,message.response.playerId = Game(socketWrapper)
+                message.conversionTable = currentGame.getConversionTable()
 
                 print("Returning player id:",message.response.playerId)
             end

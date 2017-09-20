@@ -37,17 +37,17 @@
                 </div>
                 <button id="rollDiceButton" data-bind="click: rollDice">Rolar dados</button>
             </div>
-            <button id="endTurnButton">Fim de turno</button>
+            <button id="endTurnButton" data-bind="click: endTurn">Fim de turno</button>
             <button id="buildRoadButton" data-bind="click: addRoad">Construir estrada</button>
             <button id="buildVillageButton" data-bind="click: addVillage">Construir aldeia</button>
             <button id="buildCityButton" data-bind="click: addCity">Construir cidade</button>
-            <button id="buyDevelopmentButton">Comprar carta de desenvolvimento</button>
+            <button id="buyDevelopmentButton" data-bind="click: buyDevelopmentCard">Comprar carta de desenvolvimento</button>
 
-            <div>Argila: <span data-bind="text: clayCount"></span></div>
-            <div>Pedra: <span data-bind="text: oreCount"></span></div>
-            <div>Trigo: <span data-bind="text: wheatCount"></span></div>
-            <div>Ovelha: <span data-bind="text: sheepCount"></span></div>
-            <div>Madeira: <span data-bind="text: woodCount"></span></div>
+            <div class="resource">Argila: <span data-bind="text: clayCount"></span></div>
+            <div class="resource">Pedra: <span data-bind="text: oreCount"></span></div>
+            <div class="resource">Trigo: <span data-bind="text: wheatCount"></span></div>
+            <div class="resource">Ovelha: <span data-bind="text: sheepCount"></span></div>
+            <div class="resource">Madeira: <span data-bind="text: woodCount"></span></div>
 
         </div>
     </div>

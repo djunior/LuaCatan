@@ -23,8 +23,8 @@ class ClientAPI {
     addElement(playerId,vertexId,elementType) {
         this.socket.send("addElement",null,{
             playerId: playerId,
-            elementType: elementType,
             vertexId: vertexId,
+            elementType: elementType,
         });
     }
 
